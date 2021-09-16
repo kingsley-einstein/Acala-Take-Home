@@ -1,7 +1,7 @@
 import { State } from ".";
 
 interface Action {
-  type: "CHANGE_ENDPOINT" | "EVENT_FETCHED";
+  type: "CHANGE_ENDPOINT" | "EVENT_FETCHED" | "API_INJECTED";
   payload: any;
 }
 
@@ -16,6 +16,11 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         events: action.payload
+      };
+    case "API_INJECTED":
+      return {
+        ...state,
+        api: action.payload
       };
     default:
       return state;

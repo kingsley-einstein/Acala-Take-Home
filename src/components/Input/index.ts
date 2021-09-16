@@ -1,14 +1,15 @@
 import styled from "styled-components";
 
 interface InputProps {
-  padding: string;
-  width: string;
-  fontSize: string;
-  fontWeight: "bold" | "bolder" | "normal";
-  color: string;
-  border: string;
-  borderRadius: string;
-  fontFamily: string;
+  padding?: string;
+  width?: string;
+  fontSize?: string;
+  fontWeight?: "bold" | "bolder" | "normal";
+  color?: string;
+  border?: string;
+  borderRadius?: string;
+  fontFamily?: string;
+  margin?: string;
 }
 
 const Input = styled("input")<InputProps>`
@@ -20,6 +21,7 @@ const Input = styled("input")<InputProps>`
   color: ${(props) => props.color || "black"};
   border: ${(props) => props.border || "1px solid #000"};
   border-radius: ${(props) => props.borderRadius || "0px"};
+  margin: ${(props) => props.margin || "0px"};
 `;
 
 export default Input;
