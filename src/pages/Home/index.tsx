@@ -12,7 +12,8 @@ import {
   Table,
   THead,
   TD,
-  TR
+  TR,
+  Card
 } from "../../components";
 import reducer from "../../state/reducer";
 import { initialState } from "../../state";
@@ -105,6 +106,13 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
+    if (!!state.endpoint) {
+      const provider = new WsProvider(state.endpoint);
+      ApiPromise.create({ provider }).then(setApi);
+    }
+  }, [state.endpoint]);
+
+  useEffect(() => {
     if (apiInjected) {
       loadEndBlockNumber();
     }
@@ -165,28 +173,30 @@ const Home = () => {
         </Flex>
       </form>
       <div>
-        <Table>
-          <thead>
-            <TR>
-              <ExtendedTHead>Block Number</ExtendedTHead>
-              <ExtendedTHead>Event Name</ExtendedTHead>
-              <ExtendedTHead>Event Metadata</ExtendedTHead>
-              <ExtendedTHead>Phase</ExtendedTHead>
-            </TR>
-          </thead>
-          {listOfEvents.length > 0 && (
-            <tbody>
-              {listOfEvents.map((ev, index) => (
-                <TR key={index}>
-                  <ExtendedTD>{ev.blockNumber}</ExtendedTD>
-                  <ExtendedTD>{ev.eventName}</ExtendedTD>
-                  <ExtendedTD>{ev.eventArguments}</ExtendedTD>
-                  <ExtendedTD>{ev.phase}</ExtendedTD>
-                </TR>
-              ))}
-            </tbody>
-          )}
-        </Table>
+        <Card>
+          <Table>
+            <thead>
+              <TR>
+                <ExtendedTHead>Block Number</ExtendedTHead>
+                <ExtendedTHead>Event Name</ExtendedTHead>
+                <ExtendedTHead>Event Metadata</ExtendedTHead>
+                <ExtendedTHead>Phase</ExtendedTHead>
+              </TR>
+            </thead>
+            {listOfEvents.length > 0 && (
+              <tbody>
+                {listOfEvents.map((ev, index) => (
+                  <TR key={index}>
+                    <ExtendedTD>{ev.blockNumber}</ExtendedTD>
+                    <ExtendedTD>{ev.eventName}</ExtendedTD>
+                    <ExtendedTD>{ev.eventArguments}</ExtendedTD>
+                    <ExtendedTD>{ev.phase}</ExtendedTD>
+                  </TR>
+                ))}
+              </tbody>
+            )}
+          </Table>
+        </Card>
       </div>
     </div>
   );
