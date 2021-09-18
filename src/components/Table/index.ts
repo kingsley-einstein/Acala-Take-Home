@@ -26,7 +26,10 @@ export const Table = styled("table")<TableProps & CommonDefs>`
     !!props.screens &&
     props.screens.length > 0 &&
     props.screens.map(
-      (screen) => `@media screen and (max-width: ${screen.size + "px"})`
+      (screen) =>
+        `@media screen and (max-width: ${screen.size + "px"}) ${
+          screen.definition
+        }`
     )}
 `;
 
