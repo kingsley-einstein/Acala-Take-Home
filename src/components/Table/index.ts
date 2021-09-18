@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { CommonDefs } from "../commonDefs";
 
 interface TableProps {
   borderCollapse?: "collapse" | "separate";
@@ -17,9 +18,16 @@ interface TDProps {
   border?: string;
 }
 
-export const Table = styled("table")<TableProps>`
+export const Table = styled("table")<TableProps & CommonDefs>`
   border-collapse: ${(props) => props.borderCollapse || "collapse"};
   width: ${(props) => props.width || "100%"};
+
+  ${(props) =>
+    !!props.screens &&
+    props.screens.length > 0 &&
+    props.screens.map(
+      (screen) => `@media screen and (max-width: ${screen.size + "px"})`
+    )}
 `;
 
 export const THead = styled("th")<THeadProps>`

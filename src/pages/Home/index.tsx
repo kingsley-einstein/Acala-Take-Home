@@ -142,6 +142,16 @@ const Home = () => {
           flexFlow="row wrap"
           justifyContent="center"
           alignItems="center"
+          screens={[
+            {
+              size: 360,
+              definition: `{
+              flex-flow: column wrap;
+              justify-content: center;
+              align-items: center;
+            }`
+            }
+          ]}
         >
           <Flex
             margin="3px"
@@ -218,17 +228,24 @@ const Home = () => {
               <ErrorText margin="2px 0 0 0">Endpoint is required</ErrorText>
             )}
           </Flex>
-          <Button
-            margin="3px 8px 3px"
-            padding="12px"
-            backgroundColor="teal"
-            color="#fff"
-            borderRadius="5px"
-            fontSize="15px"
-            type="submit"
+          <Flex
+            flexFlow="column wrap"
+            justifyContent="center"
+            alignItems="center"
+            margin="3px"
           >
-            {isLoading ? <Loader /> : "Scan"}
-          </Button>
+            <Button
+              margin="3px 8px 3px"
+              padding="12px"
+              backgroundColor="teal"
+              color="#fff"
+              borderRadius="5px"
+              fontSize="15px"
+              type="submit"
+            >
+              {isLoading ? <Loader /> : "Scan"}
+            </Button>
+          </Flex>
         </Flex>
       </form>
       <div>
