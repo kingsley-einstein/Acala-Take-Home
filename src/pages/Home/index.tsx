@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useReducer, useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Vec } from "@polkadot/types";
@@ -33,6 +34,12 @@ const ExtendedTHead = styled(THead)`
   border-bottom: 1px solid #ddd;
 `;
 
+const ErrorText = styled.span<any>`
+  color: red;
+  font-size: 13px;
+  margin: ${(props) => props.margin};
+`;
+
 const Home = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [startBlock, setStartBlock] = useState(0);
@@ -40,6 +47,12 @@ const Home = () => {
   const [apiInjected, setApiInjected] = useState(false);
   const [listOfEvents, setListOfEvents] = useState<Array<Details>>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm();
 
   const setApi = (payload: any) =>
     dispatch({
@@ -90,8 +103,7 @@ const Home = () => {
     setIsLoading(false);
   };
 
-  const submit = async (e: any) => {
-    e.preventDefault();
+  const submit = async () => {
     await fetchEvents();
   };
 
@@ -106,7 +118,11 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (!!state.endpoint) {
+    if (
+      !!state.endpoint &&
+      (state.endpoint.startsWith("ws://") ||
+        state.endpoint.startsWith("wss://"))
+    ) {
       const provider = new WsProvider(state.endpoint);
       ApiPromise.create({ provider }).then(setApi);
     }
@@ -120,45 +136,88 @@ const Home = () => {
 
   return (
     <div>
-      <form onSubmit={submit}>
+      <form onSubmit={handleSubmit(submit)}>
         <Flex
           margin="16px"
           flexFlow="row wrap"
           justifyContent="center"
           alignItems="center"
         >
-          <Input
+          <Flex
             margin="3px"
-            padding="12px"
-            required
-            type="number"
-            placeholder="Enter start block"
-            border="2px solid #dcdcdc"
-            borderRadius="5px"
-            onChange={handleStartBlockChange}
-            value={startBlock}
-          />
-          <Input
+            flexFlow="column wrap"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Input
+              {...register("startBlock", {
+                required: true,
+                valueAsNumber: true,
+                min: 1
+              })}
+              margin="3px"
+              padding="12px"
+              type="number"
+              placeholder="Enter start block"
+              border="2px solid #dcdcdc"
+              borderRadius="5px"
+              onChange={handleStartBlockChange}
+              value={startBlock}
+            />
+            {errors.startBlock?.type === "required" && (
+              <ErrorText margin="2px 0 0 0">
+                Starting block number is required
+              </ErrorText>
+            )}
+            {errors.startBlock?.type === "min" && (
+              <ErrorText margin="2px 0 0 0">
+                Block number cannot be less than 1
+              </ErrorText>
+            )}
+          </Flex>
+          <Flex
             margin="3px"
-            padding="12px"
-            required
-            type="number"
-            placeholder="Enter end block"
-            border="2px solid #dcdcdc"
-            borderRadius="5px"
-            onChange={handleEndBlockChange}
-            value={endBlock}
-          />
-          <Input
+            flexFlow="column wrap"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Input
+              {...register("endBlock", { required: true, valueAsNumber: true })}
+              margin="3px"
+              padding="12px"
+              type="number"
+              placeholder="Enter end block"
+              border="2px solid #dcdcdc"
+              borderRadius="5px"
+              onChange={handleEndBlockChange}
+              value={endBlock}
+            />
+            {errors.endBlock?.type === "required" && (
+              <ErrorText margin="2px 0 0 0">
+                Ending block number is required
+              </ErrorText>
+            )}
+          </Flex>
+          <Flex
             margin="3px"
-            padding="12px"
-            required
-            placeholder="Enter endpoint"
-            border="2px solid #dcdcdc"
-            borderRadius="5px"
-            onChange={setEndpoint}
-            value={state.endpoint}
-          />
+            flexFlow="column wrap"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Input
+              {...register("endpoint", { required: true })}
+              margin="3px"
+              padding="12px"
+              placeholder="Enter endpoint"
+              border="2px solid #dcdcdc"
+              borderRadius="5px"
+              onChange={setEndpoint}
+              value={state.endpoint}
+            />
+            {errors.endpoint?.type === "required" && (
+              <ErrorText margin="2px 0 0 0">Endpoint is required</ErrorText>
+            )}
+          </Flex>
           <Button
             margin="3px 8px 3px"
             padding="12px"
@@ -183,18 +242,22 @@ const Home = () => {
                 <ExtendedTHead>Phase</ExtendedTHead>
               </TR>
             </thead>
-            {listOfEvents.length > 0 && (
-              <tbody>
-                {listOfEvents.map((ev, index) => (
+            <tbody>
+              {listOfEvents.length > 0 ? (
+                listOfEvents.map((ev, index) => (
                   <TR key={index}>
                     <ExtendedTD>{ev.blockNumber}</ExtendedTD>
                     <ExtendedTD>{ev.eventName}</ExtendedTD>
                     <ExtendedTD>{ev.eventArguments}</ExtendedTD>
                     <ExtendedTD>{ev.phase}</ExtendedTD>
                   </TR>
-                ))}
-              </tbody>
-            )}
+                ))
+              ) : (
+                <TR>
+                  <ExtendedTD>No Data</ExtendedTD>
+                </TR>
+              )}
+            </tbody>
           </Table>
         </Card>
       </div>
