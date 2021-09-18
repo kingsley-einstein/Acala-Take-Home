@@ -5,11 +5,11 @@ import styled from "styled-components";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Vec } from "@polkadot/types";
 import { EventRecord } from "@polkadot/types/interfaces";
+import ProgressBar from "@ramonak/react-progress-bar";
 import {
   Input,
   Flex,
   Button,
-  Loader,
   Table,
   THead,
   TD,
@@ -47,6 +47,7 @@ const Home = () => {
   const [apiInjected, setApiInjected] = useState(false);
   const [listOfEvents, setListOfEvents] = useState<Array<Details>>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState<number>(0);
 
   const {
     register,
@@ -98,9 +99,11 @@ const Home = () => {
         };
         eventDet.push(detail);
       });
+      setProgress(Math.floor((i / endBlock) * 100));
     }
     setListOfEvents(eventDet);
     setIsLoading(false);
+    setProgress(0);
   };
 
   const submit = async () => {
@@ -243,14 +246,33 @@ const Home = () => {
               fontSize="15px"
               type="submit"
             >
-              {isLoading ? <Loader /> : "Scan"}
+              Scan
             </Button>
           </Flex>
+          {isLoading && (
+            <Flex
+              flexFlow="column wrap"
+              justifyContent="center"
+              alignItems="center"
+              margin="18px"
+            >
+              <ProgressBar completed={progress} bgColor="green" width="100%" />
+            </Flex>
+          )}
         </Flex>
       </form>
       <div>
         <Card>
-          <Table>
+          <Table
+            screens={[
+              {
+                size: 360,
+                definition: `{
+            width: 80%;
+          }`
+              }
+            ]}
+          >
             <thead>
               <TR>
                 <ExtendedTHead>Block Number</ExtendedTHead>
